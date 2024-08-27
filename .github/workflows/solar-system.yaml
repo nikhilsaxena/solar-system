@@ -8,7 +8,7 @@ on:
      - 'feature/*'
 
 env:
-    MONGO_URI: 'mongodb+srv://supercluster.d83jj.mongodb.next/superData'
+    MONGO_URI: 'mongodb+srv://supercluster.d83jj.mongodb.net/superData'
     MONGO_USERNAME: ${{ vars.MONGODB_USER }}
     MONGO_PASSWORD: ${{ secrets.MONGODB_PASSWORD }}
 
