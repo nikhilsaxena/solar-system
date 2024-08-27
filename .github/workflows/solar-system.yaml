@@ -76,8 +76,9 @@ jobs:
             path: coverage
             retention-days: 1
 
-    docker-login:
-        name: Docker Login
+    docker:
+        name: Containerization
+        needs: [unit-testing, code-coverage]
         runs-on: ubuntu-latest
         steps:
         - name: Checkout Repository
@@ -88,3 +89,10 @@ jobs:
           with:
             username: ${{ vars.DOCKERHUB_USERNAME }}
             password: ${{ secrets.DOCKERHUB_PASSWORD }}
+
+        - name: Build Docker Image
+          uses: docker/build-push-action@v6
+          with:
+            push: false
+            context: .
+            tags: ${{ vars.DOCKERHUB_USERNAME}}/solar-system:${{ github.sha }}
