@@ -90,32 +90,39 @@ jobs:
             username: ${{ vars.DOCKERHUB_USERNAME }}
             password: ${{ secrets.DOCKERHUB_PASSWORD }}
 
-        - name: Build Docker Image
-          uses: docker/build-push-action@v6
+        - name: Login to GHCR
+          uses: docker/login-action@v3
           with:
-            push: false
-            context: .
-            tags: ${{ vars.DOCKERHUB_USERNAME }}/solar-system:${{ github.sha }}
+            registry: ghcr.io
+            username: ${{ github.actor }}
+            password: ${{ secrets.GITHUB_TOKEN }}
 
-        - name: Docker Image Testing
-          run: |
-            docker images
-            docker run --name solar-system-app -d \
-                -p 3000:3000 \
-                -e MONGO_URI=$MONGO_URI \
-                -e MONGO_USERNAME=$MONGODB_USERNAME \
-                -e MONGO_PASSWORD=$MONGODB_PASSWORD \
-                ${{ vars.DOCKERHUB_USERNAME }}/solar-system:${{ github.sha }}
+        # - name: Build Docker Image
+        #   uses: docker/build-push-action@v6
+        #   with:
+        #     push: false
+        #     context: .
+        #     tags: ${{ vars.DOCKERHUB_USERNAME }}/solar-system:${{ github.sha }}
 
-            export APP_IP=$(docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' solar-system-app)
-            echo $APP_IP
+        # - name: Docker Image Testing
+        #   run: |
+        #     docker images
+        #     docker run --name solar-system-app -d \
+        #         -p 3000:3000 \
+        #         -e MONGO_URI=$MONGO_URI \
+        #         -e MONGO_USERNAME=$MONGODB_USERNAME \
+        #         -e MONGO_PASSWORD=$MONGODB_PASSWORD \
+        #         ${{ vars.DOCKERHUB_USERNAME }}/solar-system:${{ github.sha }}
 
-            echo Testing Image URL using wget
-            wget -q -O - 127.0.0.1:3000/live | grep live
+        #     export APP_IP=$(docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' solar-system-app)
+        #     echo $APP_IP
 
-        - name: Docker Push
-          uses: docker/build-push-action@v6
-          with:
-            push: true
-            context: .
-            tags: ${{ vars.DOCKERHUB_USERNAME }}/solar-system:${{ github.sha }}
+        #     echo Testing Image URL using wget
+        #     wget -q -O - 127.0.0.1:3000/live | grep live
+
+        # - name: Docker Push
+        #   uses: docker/build-push-action@v6
+        #   with:
+        #     push: true
+        #     context: .
+        #     tags: ${{ vars.DOCKERHUB_USERNAME }}/solar-system:${{ github.sha }}
